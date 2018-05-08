@@ -1,77 +1,58 @@
 #include "bll.hpp"
 
-template<typename T> SList<T>::SList() {
-    &SList::data = new T;
-}
-
-template<typename T> SList<T>::SList(SList* l) {
-    // SList* p = l;
-    // while (p.next() != nullptr) {
-    //
-    // }
-}
-template<typename T> SList<T>::SList(T& object);
-template<typename T> SList<T>::~SList();
-
-template<typename T> void SList<T>::setData(T& value) {
-    SList::data = value;
-}
-template<typename T> T SList<T>::getData() {
-    return SList::data;
-}
-
-template<typename T> void SList<T>::setNext(SList* n) {
-    SList::next = n;
-}
-
-template<typename T> SList* SList<T>::getNext() {
-    return SList::next;
-}
-
-template<typename T> int SList<T>::size() {
-    unsigned int count = (SList::data) ? 1 : 0;
-    SList* p = SList::next;
-    while (p.getNext() != nullptr) {
-        count++;
-        p = p.getNext();
+template <typename T> sl::SList<T>* create_list(void) {
+    sl::SList<T>* l = new sl::SList<T>;
+    if (l != nullptr) {
+        l->next = nullptr;
+        return l;
+    } else {
+        std::cerr << "Cannot create list" << std::endl;
+        return nullptr;
     }
-    return count;
 }
 
-template<typename T> SList* SList<T>::prepend(T& value);
-template<typename T> SList* SList<T>::append(T& value);
-template<typename T> SList* SList<T>::swap(SList* s);
-template<typename T> SList* SList<T>::makeRoundList();
-
-bool operator>(SList* l1, SList* l2) {
-    if (l1.size() > l2.size()) return true;
-    return false;
-}
-bool operator<(SList* l1, SList* l2) {
-    if (l1.size() < l2.size()) return true;
-    return false;
-}
-bool operator==(SList* l1, SList* l2) {
-    if (l1.size() == l2.size()) return true;
-    return false;
-}
-
-ostream& operator<<(ostream& os, SList* l) {
-    SList* p = l;
-    os << p.getData(); p = p.getNext();
-    while (p.getNext() != nullptr) {
-        os << ", ";
-        os << l.data();
+template <typename T> void free_list(sl::SList<T>* l) {
+    sl::SList<T>* p = l;
+    while (p->next != nullptr) {
+        sl::SList<T>* tmp = p->next;
+        delete p;
+        p = tmp;
     }
-    return os;
+    delete p;
 }
 
-int main() {
-    SList<int> l;
-    l.append(5);
-    l.append(6);
-    // cout << l << endl;
-    l.prepend(1);
-    // cout << l << endl;
-    return 0;
+template <typename T> int sl::size(sl::SList<T>* l);
+
+template <typename T> T sl::get_data(sl::SList<T>* l) {
+    if (l == nullptr) {
+        std::cerr << "Cannot get data from null pointer" << std::endl;
+        return nullptr;
+    }
+    return l->data;
 }
+
+template <typename T> sl::SList<T>* sl::get_next(sl::SList<T>* l) {
+    if (l == nullptr) {
+        std::cerr << "Cannot get next from null pointer" << std::endl;
+        return;
+    }
+    return l->next;
+}
+
+template <typename T> sl::SList<T>* sl::prepend(sl::SList<T>* l, T value);
+template <typename T> sl::SList<T>* sl::append(sl::SList<T>* l, T value) {
+    sl::SList<T>* p = l;
+    while (p->next != nullptr) {
+        p = p->next;
+    }
+
+    sl::SList<T>* n_node = sl::create_list<T>();
+    n_node->data = value;
+    p->next = n_node;
+
+    return l;
+}
+
+template <typename T> sl::SList<T>* sl::insert_after(sl::SList<T>* l, sl::SList<T>* p, T data);
+template <typename T> sl::SList<T>* sl::insert_before(sl::SList<T>* l, sl::SList<T>* p, T data);
+template <typename T> sl::SList<T>* sl::remove(sl::SList<T>* l, sl::SList<T>* p);
