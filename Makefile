@@ -1,22 +1,16 @@
 CC = g++
 CPPFLAGS = -O2 -Wall -std=c++11
-LFLAGS = -L . -lbll
-
-srcdir = src
-objdir = obj
+#LFLAGS = -L . -lbll
 
 SRC = $(wildcard *.cpp)
 OBJ = $(SRC:.cpp=.o)
 
-all: libbll.dylib Test
-
-libbll.dylib: bll.cpp
-	$(CC) -dynamiclib -o libbll.dylib bll.cpp
+all: Test
 
 test.o: test.cpp bll.hpp
 Test: test.o
-	$(CC) test.o -o Test $(LFLAGS)
+	$(CC) test.o -o Test
 
 .PHONY: clean
 clean:
-	rm -f $(OBJ)
+	rm -f Test test.o
