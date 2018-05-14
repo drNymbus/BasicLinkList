@@ -6,7 +6,7 @@
 namespace sl {
     template <typename T>
     struct SList {
-            T data;
+            T* data;
             SList<T>* next;
 
             friend std::ostream& operator <<(std::ostream& os, SList* l) {
@@ -48,22 +48,30 @@ namespace sl {
  * \brief:
  * \return:
  */
-    template <typename T> void free_list(SList<T>* l) {
+template <typename T> void free_list(SList<T>* l) {
+    try {
         SList<T>* p = l;
         while (p->next != nullptr) {
+            delete p->data;
             SList<T>* tmp = p->next;
             delete p;
             p = tmp;
         }
         delete p;
+    } catch (std::exception const& e) {
+        std::cerr << "(sl::free_list()) Exception caught :" << std::endl;
+        std::cerr << "\t" << e.what() << std::endl;
+    } catch (...) {
+        std::cerr << "(sl::free_list()) Unknown error." << std::endl;
     }
+}
 
 /*
  * \param:
  * \brief:
  * \return:
  */
-    template <typename T> int size(SList<T>* l) {
+    template <typename T> unsigned int size(SList<T>* l) {
         unsigned int i = 0;
         while (l->next != nullptr) {
             l = l->next;
@@ -77,7 +85,7 @@ namespace sl {
  * \brief:
  * \return:
  */
-    template <typename T> T get_data(SList<T>* l) {
+    template <typename T> T* get_data(SList<T>* l) {
         if (l == nullptr) {
             std::cerr << "Cannot get data from null pointer" << std::endl;
             return nullptr;
@@ -99,7 +107,7 @@ namespace sl {
  * \brief:
  * \return:
  */
-    template <typename T> SList<T>* prepend(SList<T>* l, T value) {
+    template <typename T> SList<T>* prepend(SList<T>* l, T* value) {
         SList<T>* p = create_list<T>();
         if (p != nullptr) {
             p->data = value;
@@ -115,7 +123,7 @@ namespace sl {
  * \brief:
  * \return:
  */
-    template <typename T> SList<T>* append(SList<T>* l, T value) {
+    template <typename T> SList<T>* append(SList<T>* l, T* value) {
         SList<T>* p = l;
         while (p->next != nullptr) {
             p = p->next;
@@ -133,7 +141,7 @@ namespace sl {
  * \brief:
  * \return:
  */
-    template <typename T> SList<T>* insert_after(SList<T>* l, SList<T>* p, T data) {
+    template <typename T> SList<T>* insert_after(SList<T>* l, SList<T>* p, T* data) {
         if (l == nullptr || p == nullptr) {
             std::cerr << "Cannot insert_after with nullptr" << std::endl;
             return nullptr;
@@ -147,7 +155,7 @@ namespace sl {
         return l;
     }
 
-    template <typename T> SList<T>* insert_before(SList<T>* l, SList<T>* p, T data) {
+    template <typename T> SList<T>* insert_before(SList<T>* l, SList<T>* p, T* data) {
         SList<T>* prev = l;
         while (prev->next != p && prev->next != nullptr) {
             prev = prev->next;
@@ -190,3 +198,4 @@ namespace sl {
 // bool operator<(SList* l1, SList* l2);
 // bool operator==(SList* l1, SList* l2);
 // ostream& operator<<(ostream& os, SList* l);
+
